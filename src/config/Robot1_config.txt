@@ -1,0 +1,6 @@
+name=ROBOT1
+trajectoryPlanningMethod=LSPB
+maxDistance=0.1
+maxVelocity=10
+maxAcceleration=5
+minDeltaTime=0.01
