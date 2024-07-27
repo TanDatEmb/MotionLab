@@ -1,1 +1,2 @@
 # MotionLab
+Updates every Friday
