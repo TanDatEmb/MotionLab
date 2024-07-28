@@ -1,22 +1,22 @@
 function [circleRadius, angleBetweenPoints, isClockwise] = circleFromTwoPointsAndCenter(startPoint, endPoint, circleCenter)
-    % Extract positions from Point objects
-    startPos = startPoint.Position;
-    endPos = endPoint.Position;
-    centerPos = circleCenter.Position;
+    % Tính bán kính của đường tròn
+    circleRadius = norm(startPoint.Position - circleCenter.Position);
+    
+    % Tính góc giữa hai điểm (clockwise hay counterclockwise)
+    vectorStartToCenter = startPoint.Position - circleCenter.Position;
+    vectorEndToCenter = endPoint.Position - circleCenter.Position;
+    cosTheta = dot(vectorStartToCenter, vectorEndToCenter) / (norm(vectorStartToCenter) * norm(vectorEndToCenter));
+    angleBetweenPoints = acos(cosTheta);
+    
+    % Vector pháp tuyến của mặt phẳng
+    normalVector = cross(vectorStartToCenter, vectorEndToCenter);
 
-    % Calculate the radius of the circle
-    circleRadius = norm(startPos - centerPos);
-
-    % Calculate the angle between the points
-    vectorFromCenterToStart = startPos - centerPos;
-    vectorFromCenterToEnd = endPos - centerPos;
-    angleBetweenPoints = atan2(norm(cross(vectorFromCenterToStart, vectorFromCenterToEnd)), dot(vectorFromCenterToStart, vectorFromCenterToEnd));
-
-    % Determine the direction (clockwise or counterclockwise)
-    normalVector = cross(vectorFromCenterToStart, vectorFromCenterToEnd);
-    if dot(normalVector, centerPos) > 0
-        isClockwise = true;
+    % Xác định chiều của đường đi (clockwise hay counterclockwise)
+    isClockwise = dot(cross(vectorStartToCenter, vectorEndToCenter), normalVector) > 0;
+    if isClockwise
+        % do something
     else
-        isClockwise = false;
+        % do something
     end
+
 end
