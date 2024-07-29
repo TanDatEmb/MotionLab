@@ -2,7 +2,7 @@ function cleanup()
     % Hiển thị thông tin kết thúc
     fprintf('Đang kết thúc chương trình...\n');
     
-    % Xóa biến toàn cục nếu cần thiết
+    % Xóa biến toàn cục 
     clearvars -global;
     
     % Xóa các biến khác
