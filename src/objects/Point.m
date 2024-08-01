@@ -15,7 +15,7 @@ classdef Point
                 obj.ReferenceFrame = referenceFrame;
                 % Tạo điểm bằng khai báo quaternions
                 if isnumeric(orientation) && numel(orientation) == 4
-                    obj.OrientationQuaternion = orientation;
+                    obj.OrientationQuaternion = quatnormalize(orientation);
                     obj.OrientationMatrix = quat2rotm(orientation);
                 else % Tạo điểm bằng khai báo matrix
                     obj.OrientationMatrix = orientation;

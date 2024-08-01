@@ -54,6 +54,7 @@ function startup(robotName)
     addpath(fullfile(rvcpath, 'move'));
     addpath(fullfile(rvcpath, 'objects'));
     addpath(fullfile(rvcpath, 'utilities'));
+    addpath(fullfile(rvcpath, 'data'));
     addpath(fullfile(rvcpath, 'temp'));
 
     % Hiển thị thông báo hoàn thành

@@ -1,15 +1,15 @@
-function [circleCenter, circleRadius, angleBetweenPoints, isClockwise, isIntermediatePointOnArc] = circleFromThreePoints(startPoint, midPoint, endPoint)
+function [circleCenter, circleRadius, angleBetweenPoints, isClockwise, isIntermediatePointOnArc] = circleFromThreePoints(startPos, endPos, midPos)
     % Tính vector giữa các điểm
-    vector12 = midPoint.Position - startPoint.Position;
-    vector13 = endPoint.Position - startPoint.Position;
+    vector12 = midPos - startPos;
+    vector13 = endPos - startPos;
     
     % Trung điểm của các đoạn thẳng
-    midpoint12 = (startPoint.Position + midPoint.Position) / 2;
-    midpoint13 = (startPoint.Position + endPoint.Position) / 2;
+    midpoint12 = (startPos + midPos) / 2;
+    midpoint13 = (startPos + endPos) / 2;
     
     % Vector pháp tuyến của mặt phẳng
     normalVector = cross(vector12, vector13);
-    D = -dot(normalVector, startPoint.Position);
+    D = -dot(normalVector, startPos);
     
     % Tìm đường trung trực của các đoạn thẳng
     syms x y z
@@ -21,24 +21,24 @@ function [circleCenter, circleRadius, angleBetweenPoints, isClockwise, isInterme
     circleCenter = double([solution.x, solution.y, solution.z]);
     
     % Tính bán kính đường tròn
-    circleRadius = norm(circleCenter - startPoint.Position);
+    circleRadius = norm(circleCenter - startPos);
     
     % Tính góc giữa điểm 1 và điểm 3
-    vectorStartToCenter = startPoint.Position - circleCenter;
-    vectorEndToCenter = endPoint.Position - circleCenter;
-    cosTheta = dot(vectorStartToCenter, vectorEndToCenter) / (norm(vectorStartToCenter) * norm(vectorEndToCenter));
+    vectorCenterToStart = startPos - circleCenter;
+    vectorCenterToEnd = endPos - circleCenter;
+    cosTheta = dot(vectorCenterToStart, vectorCenterToEnd) / (norm(vectorCenterToStart) * norm(vectorCenterToEnd));
     angleBetweenPoints = acos(cosTheta);
     
     % Xác định chiều của đường đi (clockwise hay counterclockwise)
-    isClockwise = dot(cross(vectorStartToCenter, vectorEndToCenter), normalVector) > 0;
+    isClockwise = dot(cross(vectorCenterToStart, vectorCenterToEnd), normalVector) > 0;
     
     % Kiểm tra điểm trung gian có nằm trên cung tròn không
-    vectorIntermediateToCenter = midPoint.Position - circleCenter;
-    cosThetaIntermediate = dot(vectorStartToCenter, vectorIntermediateToCenter) / (norm(vectorStartToCenter) * norm(vectorIntermediateToCenter));
+    vectorIntermediateToCenter = midPos - circleCenter;
+    cosThetaIntermediate = dot(vectorCenterToStart, vectorIntermediateToCenter) / (norm(vectorCenterToStart) * norm(vectorIntermediateToCenter));
     angleIntermediate = acos(cosThetaIntermediate);
     
     % Xác định chiều của góc giữa điểm đầu và điểm trung gian
-    isIntermediateClockwise = dot(cross(vectorStartToCenter, vectorIntermediateToCenter), normalVector) > 0;
+    isIntermediateClockwise = dot(cross(vectorCenterToStart, vectorIntermediateToCenter), normalVector) > 0;
     
     % Kiểm tra nếu điểm trung gian nằm giữa điểm đầu và điểm cuối theo chiều của cung tròn
     if isClockwise

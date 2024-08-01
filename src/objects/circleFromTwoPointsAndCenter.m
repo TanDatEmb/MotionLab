@@ -5,6 +5,7 @@ function [circleRadius, angleBetweenPoints, isClockwise] = circleFromTwoPointsAn
     % Tính góc giữa hai điểm (clockwise hay counterclockwise)
     vectorStartToCenter = startPoint.Position - circleCenter.Position;
     vectorEndToCenter = endPoint.Position - circleCenter.Position;
+    
     cosTheta = dot(vectorStartToCenter, vectorEndToCenter) / (norm(vectorStartToCenter) * norm(vectorEndToCenter));
     angleBetweenPoints = acos(cosTheta);
     
