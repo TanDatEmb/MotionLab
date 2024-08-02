@@ -84,7 +84,7 @@ classdef MoveLinear
             minDeltaTime = obj.MinDeltaTime;
             smoothZone = obj.SmoothZone;
 
-            %% Các Thông Số Tính Toán
+           %% Các Thông Số Tính Toán
             % Độ dài quãng đường
             distance = norm(endPoint - startPoint);
 
@@ -93,43 +93,42 @@ classdef MoveLinear
                 desiredVelocity = maxVelocity;
             end
 
-            % Thời gian tăng giảm tốc tối đa
-            timeAccel = desiredVelocity / maxAcceleration;
+            % Tính thời gian tăng tốc và giảm tốc
+            timeAccel = (desiredVelocity - startVelocity) / maxAcceleration;
+            timeDecel = (desiredVelocity - endVelocity) / maxAcceleration;
 
-            if timeAccel < minDeltaTime
-                error('Error: timeAccel')
+            if timeAccel < minDeltaTime || timeDecel < minDeltaTime
+                error('Error: timeAccel or timeDecel is too small.');
+            else
+                disp('okey');
             end
 
-            % Số bước thời gian tối đa cho tăng giảm tốc
-            numStepsAccelMax = floor(timeAccel / minDeltaTime);
-
             % Gia tốc thực tế
-            actualAcceleration = desiredVelocity / timeAccel;
+            actualAcceleration = (desiredVelocity - startVelocity) / timeAccel;
+            actualDeceleration = (desiredVelocity - endVelocity) / timeDecel;
 
-            % Tích phân gia tốc thực tế theo thời gian tối ưu để tính quãng đường tăng giảm tốc
-            distanceAccel = 0.5 * actualAcceleration * timeAccel^2;
+            % Tính quãng đường tăng tốc và giảm tốc
+            distanceAccel = startVelocity * timeAccel + 0.5 * actualAcceleration * timeAccel^2;
+            distanceDecel = desiredVelocity * timeDecel - 0.5 * actualDeceleration * timeDecel^2;
 
-            % Thời gian vận tốc cố định
-            distanceConstantVelocity = distance - 2 * distanceAccel;
+            % Tính quãng đường và thời gian vận tốc cố định
+            distanceConstantVelocity = distance - (distanceAccel + distanceDecel);
             if distanceConstantVelocity < 0
-                % Nếu quãng đường không đủ cho vận tốc cố định, điều chỉnh lại thời gian tăng/giảm tốc
-                distanceConstantVelocity = 0;
-                timeAccel = sqrt(distance / maxAcceleration);
-                numStepsAccelMax = floor(timeAccel / minDeltaTime);
-                actualAcceleration = maxAcceleration;
-                distanceAccel = 0.5 * actualAcceleration * timeAccel^2;
+                error('Error: distanceConstantVelocity is negative.');
             end
 
             timeConstantVelocity = distanceConstantVelocity / desiredVelocity;
-            totalTime = 2 * timeAccel + timeConstantVelocity;
+            totalTime = timeAccel + timeConstantVelocity + timeDecel;
 
-            % Số bước thời gian tối đa cho vận tốc cố định
+            % Số bước thời gian
+            numStepsAccel = floor(timeAccel / minDeltaTime);
             numStepsConstantVelocity = floor(timeConstantVelocity / minDeltaTime);
+            numStepsDecel = floor(timeDecel / minDeltaTime);
 
             %% Tổng hợp
-            timeAccelArray = linspace(0, timeAccel, numStepsAccelMax);
+            timeAccelArray = linspace(0, timeAccel, numStepsAccel);
             timeConstantVelocityArray = linspace(timeAccel, timeAccel + timeConstantVelocity, numStepsConstantVelocity);
-            timeDecelArray = linspace(timeAccel + timeConstantVelocity, 2 * timeAccel + timeConstantVelocity, numStepsAccelMax);
+            timeDecelArray = linspace(timeAccel + timeConstantVelocity, totalTime, numStepsDecel);
 
             timeVector = [timeAccelArray, timeConstantVelocityArray(2:end), timeDecelArray(2:end)];
 
@@ -137,27 +136,27 @@ classdef MoveLinear
             velocityProfile = zeros(1, length(timeVector));
             pointProfile = zeros(1, length(timeVector));
 
-            % Compute the trajectory
+            %% Tính toán các quỹ đạo
             for i = 2:length(timeVector)
                 deltaTime = timeVector(i) - timeVector(i-1);
                 if deltaTime < minDeltaTime
-                    error('Error: deltaTime');
+                    error('Error: deltaTime is too small.');
                 end
-                if timeVector(i) < timeAccel
-                    % Acceleration phase
+                if timeVector(i) <= timeAccel
+                    % Giai đoạn tăng tốc
                     accelerationProfile(i) = actualAcceleration;
-                    velocityProfile(i) = actualAcceleration * timeVector(i);
-                    pointProfile(i) = 0 + 0.5 * actualAcceleration * timeVector(i)^2;
-                elseif timeVector(i) < (timeAccel + timeConstantVelocity)
-                    % Constant velocity phase
+                    velocityProfile(i) = startVelocity + actualAcceleration * timeVector(i);
+                    pointProfile(i) = startVelocity * timeVector(i) + 0.5 * actualAcceleration * timeVector(i)^2;
+                elseif timeVector(i) <= (timeAccel + timeConstantVelocity)
+                    % Giai đoạn vận tốc cố định
                     accelerationProfile(i) = 0;
                     velocityProfile(i) = desiredVelocity;
-                    pointProfile(i) = 0 + distanceAccel + desiredVelocity * (timeVector(i) - timeAccel);
+                    pointProfile(i) = distanceAccel + desiredVelocity * (timeVector(i) - timeAccel);
                 else
-                    % Deceleration phase
-                    accelerationProfile(i) = -actualAcceleration;
-                    velocityProfile(i) = desiredVelocity - actualAcceleration * (timeVector(i) - timeAccel - timeConstantVelocity);
-                    pointProfile(i) = 0 + distanceAccel + distanceConstantVelocity + desiredVelocity * (timeVector(i) - timeAccel - timeConstantVelocity) - 0.5 * actualAcceleration * (timeVector(i) - timeAccel - timeConstantVelocity)^2;
+                    % Giai đoạn giảm tốc
+                    accelerationProfile(i) = -actualDeceleration;
+                    velocityProfile(i) = desiredVelocity - actualDeceleration * (timeVector(i) - timeAccel - timeConstantVelocity);
+                    pointProfile(i) = distanceAccel + distanceConstantVelocity + desiredVelocity * (timeVector(i) - timeAccel - timeConstantVelocity) - 0.5 * actualDeceleration * (timeVector(i) - timeAccel - timeConstantVelocity)^2;
                 end
             end
              
