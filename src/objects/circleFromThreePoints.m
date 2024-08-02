@@ -1,4 +1,4 @@
-function [circleCenter, circleRadius, angleBetweenPoints, isClockwise, isIntermediatePointOnArc] = circleFromThreePoints(startPos, endPos, midPos)
+function [circleCenter, circleRadius, angleBetweenPoints, normalVector, isClockwise, isIntermediatePointOnArc] = circleFromThreePoints(startPos, endPos, midPos)
     % Tính vector giữa các điểm
     vector12 = midPos - startPos;
     vector13 = endPos - startPos;

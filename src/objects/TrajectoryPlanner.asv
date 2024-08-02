@@ -169,11 +169,11 @@ classdef TrajectoryPlanner < handle
             % Lặp qua từng điểm trong quỹ đạo
             for i = 1:length(obj.PointTrajectory)
                 % Lấy điểm hiện tại
-                point = obj.PointTrajectory(i,:);
+                point = obj.PointTrajectory{i};
 
                 % Ghi số thứ tự hàng và tọa độ X, Y, Z
                 for j = 1:size(point, 1)
-                    fprintf(fileID, 'N%d X%.2f Y%.2f Z%.2f\n', i, point(j, 1), point(j, 2), point(j, 3));
+                    fprintf(fileID, '%d X%.2f Y%.2f Z%.2f\n', j, point(j, 1), point(j, 2), point(j, 3));
                 end
             end
 

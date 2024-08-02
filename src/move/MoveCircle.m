@@ -89,7 +89,7 @@ classdef MoveCircle
 
             %% Các Thông Số Tính Toán
             % Độ dài quãng đường
-            [centerPos, radius, totalAngle] = circleFromThreePoints(startPos, endPos, midPos);
+            [centerPos, radius, totalAngle, normalVector] = circleFromThreePoints(startPos, endPos, midPos);
             % Độ dài cung tròn
             arcLength = radius * abs(totalAngle);
 
@@ -176,22 +176,39 @@ classdef MoveCircle
             end
 
             %% Chuyển Đổi Sang Vector 3D
-            % Chuyển đổi pointProfile từ khoảng cách thành góc
             thetaProfile = pointProfile / radius;
             pointProfile3D = zeros(length(thetaProfile), 3);
 
+            %% Chuyển đổi từ hệ tọa độ 2D trên mặt phẳng vuông góc với `normalVector` sang 3D
+            % Định nghĩa trục tọa độ gốc trên mặt phẳng
+            v1 = (startPos - centerPos) / norm(startPos - centerPos);
+            v2 = cross(normalVector, v1);
+            v2 = v2 / norm(v2);
+
             % Tính các điểm trên cung tròn
             for i = 1:length(thetaProfile)
-                pointProfile3D(i, :) = centerPos + radius * [cos(thetaProfile(i)), sin(thetaProfile(i)), 0];
+                pointProfile3D(i, :) = centerPos + radius * (v1 * cos(thetaProfile(i)) + v2 * sin(thetaProfile(i)));
             end
 
-            direction = (endPos - startPos) / arcLength;
-            velocityProfile3D = velocityProfile' .* direction;
-            accelerationProfile3D = accelerationProfile' .* direction;
+            % Tính toán hướng chuyển động tại mỗi điểm
+            diffPoints = diff([startPos; pointProfile3D]); % Tính toán điểm khác biệt
+            norms = vecnorm(diffPoints, 2, 2); % Tính toán độ dài của các vector
+            norms(norms == 0) = 1; % Tránh chia cho 0 bằng cách thay đổi độ dài vector bằng 1 nếu bằng 0
+            directionProfile = diffPoints ./ norms; % Tính toán hướng và chuẩn hóa các vector
+
+            % Kiểm tra và xử lý kích thước không phù hợp
+            if length(velocityProfile) ~= size(directionProfile, 1)
+                error('Error: Size mismatch between velocityProfile and directionProfile.');
+            end
+
+            % Cập nhật các profile vận tốc và gia tốc
+            velocityProfile3D = velocityProfile' .* directionProfile; % Đảm bảo rằng kích thước của directionProfile và velocityProfile tương thích
+            accelerationProfile3D = accelerationProfile' .* directionProfile; % Đảm bảo rằng kích thước của directionProfile và accelerationProfile tương thích
+
 
             %% Quy Hoạch Hướng Quaternions
             orientationTrajectory = slerpQuaternion(startQuaternion, endQuaternion, linspace(0, 1, length(timeVector)));
-
+            
             %% Cập Nhật Các Thuộc Tính của Đối Tượng
             obj.TimeTrajectory = timeVector;
             obj.PointTrajectory = pointProfile3D;
