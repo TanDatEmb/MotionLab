@@ -1,0 +1,10 @@
+name=Articulated
+trajectoryPlanningMethod=LSPB
+maxDistance=1000
+maxVelocity=500
+maxAcceleration=100
+minDeltaTime=0.01
+maxJerk=10
+DHParameters=0 100 0 -pi/2; 0 0 200 0; 0 0 150 -pi/2; 0 300 0 pi/2; 0 0 0 -pi/2; 0 100 0 0
+
+

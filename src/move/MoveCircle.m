@@ -37,7 +37,6 @@ classdef MoveCircle
             config = readConfig('config.txt');
             % Cập nhật thuộc tính từ cấu hình
             obj.PlanningMethod = config('trajectoryPlanningMethod');
-
             obj.MaxDistance = str2double(config('maxDistance'));
             obj.MaxVelocity = str2double(config('maxVelocity'));
             obj.MaxAcceleration = str2double(config('maxAcceleration'));

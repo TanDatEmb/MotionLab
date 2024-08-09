@@ -28,18 +28,14 @@ classdef TrajectoryPlanner < handle
 
             % Vẽ quỹ đạo hoặc quỹ đạo 3D có hướng dựa trên tham số option
             switch option
-                case 1
+                case 'plot2D'
                     % Vẽ quỹ đạo
                     plotTrajectory(obj.PointTrajectory, obj.VelocityTrajectory, obj.AccelerationTrajectory, obj.OrientationTrajectory, obj.TimeTrajectory);
-                case 2
-                    % Vẽ quỹ đạo và quỹ đạo 3D có hướng
-                    plotTrajectory(obj.PointTrajectory, obj.VelocityTrajectory, obj.AccelerationTrajectory, obj.OrientationTrajectory, obj.TimeTrajectory);
-                    plot3DTrajectoryWithQuaternions(obj.PointTrajectory,obj.OrientationTrajectory);
-                case 3
+                case 'plot3D'
                     % Vẽ quỹ đạo 3D có hướng
                     plot3DTrajectoryWithQuaternions(obj.PointTrajectory,obj.OrientationTrajectory);
-                case 4
-                    obj.saveTrajectoryToFile('output.txt');
+                case 'save'
+                    obj.saveTrajectoryToFile('point_value.txt');
                 otherwise
                     % Không vẽ gì
             end
@@ -165,7 +161,12 @@ classdef TrajectoryPlanner < handle
             if fileID == -1
                 error('Không thể mở file %s để ghi.', filepath);
             end
+            % Get the current date and time
+            currentDateTime = datetime("now");
 
+            % Write the date and time at the beginning of the file
+            fprintf(fileID, 'Date and Time: %s\n', currentDateTime);
+            fprintf(fileID, '---------------------------------\n');
             % Lặp qua từng điểm trong quỹ đạo
             for i = 1:length(obj.PointTrajectory)
                 % Lấy điểm hiện tại
@@ -173,7 +174,7 @@ classdef TrajectoryPlanner < handle
 
                 % Ghi số thứ tự hàng và tọa độ X, Y, Z
                 for j = 1:size(point, 1)
-                    fprintf(fileID, 'N%d X%.2f Y%.2f Z%.2f\n', i, point(j, 1), point(j, 2), point(j, 3));
+                    fprintf(fileID, 'N%d X%.6f Y%.6f Z%.6f\n', i, point(j, 1), point(j, 2), point(j, 3));
                 end
             end
 

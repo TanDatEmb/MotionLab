@@ -1,6 +1,11 @@
-name=ROBOT2
-trajectoryPlanningMethod=Quintic
-maxDistance=0.1
-maxVelocity=10
-maxAcceleration=50
-minDeltaTime=0.1
+name=5AxisCNC
+robotType=5_axis_CNC
+jointTypes=fixed;prismatic;prismatic;prismatic;revolute;revolute
+DHParameters=1.5708 0 0 1.5708;1.5708 0 0 1.5708; 1.5708 0 0 1.5708;0 0 0 -1.5708;0 0 0 1.5708; 0 0 0 0
+jointLimit=0 0; 0 1000; 0 1000; 0 1000; -180 180; -180 180
+maxDistance=1000
+maxVelocity=500
+maxAcceleration=100
+minDeltaTime=0.01
+maxJerk=10
+trajectoryPlanningMethod=LSPB
