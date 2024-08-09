@@ -1,0 +1,11 @@
+name=3AxisCNC
+robotType=3_axis_CNC
+jointTypes=prismatic;prismatic;prismatic
+DHParameters=1.5708 0 0 1.5708;1.5708 0 0 1.5708; 1.5708 0 0 1.5708;0 0 0 0
+jointLimit=0 1000; 0 1000; 0 1000
+maxDistance=1000
+maxVelocity=500
+maxAcceleration=100
+minDeltaTime=0.01
+maxJerk=10
+trajectoryPlanningMethod=LSPB
