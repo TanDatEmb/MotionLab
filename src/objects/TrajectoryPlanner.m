@@ -34,7 +34,7 @@ classdef TrajectoryPlanner < handle
                 case 'plot3D'
                     % Vẽ quỹ đạo 3D có hướng
                     plot3DTrajectoryWithQuaternions(obj.PointTrajectory,obj.OrientationTrajectory);
-                case 'save'
+                case 'Save'
                     obj.saveTrajectoryToFile('point_value.txt');
                 otherwise
                     % Không vẽ gì

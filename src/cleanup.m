@@ -7,7 +7,7 @@ function cleanup()
     
     % Xóa các biến khác
     clearvars;
-    
+
     % Gỡ bỏ các thư mục khỏi đường dẫn MATLAB
     rvcpath = fileparts(mfilename('fullpath'));
     
@@ -54,5 +54,5 @@ function cleanup()
     end
     
     % Thông báo hoàn thành
-    fprintf('Chương trình đã kết thúc thành công.\n');
+    disp('Chương trình đã kết thúc thành công.');
 end

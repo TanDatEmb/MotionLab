@@ -1,4 +1,5 @@
 function startup(robotName)
+
     % Hiển thị thông tin về ứng dụng
     fprintf('Khởi động hệ thống cho robot: %s...\n', robotName);
     

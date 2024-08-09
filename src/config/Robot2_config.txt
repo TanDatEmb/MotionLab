@@ -1,5 +1,5 @@
 name=5AxisCNC
-robotType=5_axis_CNC
+robotType=DH
 jointTypes=fixed;prismatic;prismatic;prismatic;revolute;revolute
 DHParameters=1.5708 0 0 1.5708;1.5708 0 0 1.5708; 1.5708 0 0 1.5708;0 0 0 -1.5708;0 0 0 1.5708; 0 0 0 0
 jointLimit=0 0; 0 1000; 0 1000; 0 1000; -180 180; -180 180
